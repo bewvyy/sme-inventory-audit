@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SME Warehouse & Audit System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📦 SME Warehouse & Audit Trail System</h1>
+    <div class="user-badge">
+      User: <strong id="current-user">ไม่ได้เข้าสู่ระบบ</strong>
+      <button id="logout-btn" style="display:none; margin-left:10px; padding:3px 8px; font-size:0.8rem;" onclick="logout()">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ส่วนฟอร์ม Login -->
+    <section id="login-section" class="card">
+      <h2>🔑 เข้าสู่ระบบ</h2>
+      <form id="login-form" class="inline-form">
+        <input type="text" id="login-username" placeholder="Username (เช่น admin หรือ somchai_staff)" required>
+        <input type="password" id="login-password" placeholder="Password (เช่น 123)" required>
+        <button type="submit" class="btn-green">เข้าสู่ระบบ</button>
+      </form>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard-section" class="card" style="display: none;">
+      <h2>📊 ภาพรวมระบบคลังสินค้า (Dashboard)</h2>
+      <div class="dashboard-grid">
+        <!-- การ์ดที่ 1: กิจกรรมทั้งหมดในวันนี้ -->
+        <div class="dash-card">
+          <div class="dash-title">📊 กิจกรรมทั้งหมดในวันนี้</div>
+          <div class="dash-value text-blue" id="stat-today-actions">0</div>
+          <div class="dash-sub text-blue">Total Actions</div>
+        </div>
+
+        <!-- การ์ดที่ 2: ยอดรับสินค้าเข้ารวม -->
+        <div class="dash-card">
+          <div class="dash-title">📦 ยอดรับสินค้าเข้ารวม</div>
+          <div class="dash-value text-green" id="stat-total-restocked">0</div>
+          <div class="dash-sub text-green">Total Restocked</div>
+        </div>
+
+        <!-- การ์ดที่ 3: ยอดส่งออกสินค้าจำหน่ายรวม -->
+        <div class="dash-card">
+          <div class="dash-title">🚚 ยอดส่งออกสินค้าจำหน่ายรวม</div>
+          <div class="dash-value text-orange" id="stat-total-exported">0</div>
+          <div class="dash-sub text-orange">Total Exported</div>
+        </div>
+
+        <!-- การ์ดที่ 4: รายการสินค้าทั้งหมด -->
+        <div class="dash-card">
+          <div class="dash-title">🏷️ รายการสินค้าทั้งหมด</div>
+          <div class="dash-value text-purple" id="stat-total-types">0</div>
+          <div class="dash-sub text-purple">Total Product Types</div>
+        </div>
+
+        <!-- การ์ดที่ 5: เหตุการณ์ความเสี่ยงสูง (แสดงเฉพาะ Admin เท่านั้น) -->
+        <div class="dash-card dash-danger" id="card-after-hours" style="display: none;">
+          <div class="dash-title text-danger-title">⚠️ เหตุการณ์ความเสี่ยงสูง</div>
+          <div class="dash-value text-danger" id="stat-after-hours">0</div>
+          <div class="dash-sub text-danger">Failed / After-Hours</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- หน้าจอฝั่ง พนักงาน (Staff View) -->
+    <section id="app-section" class="card" style="display: none;">
+      <h2>รายการสินค้าในคลัง (Staff View)</h2>
+      
+      <!-- ฟอร์มเพิ่มสินค้า -->
+      <form id="add-product-form" class="inline-form">
+        <input type="text" id="p-id" placeholder="รหัสสินค้า (เช่น P001)" required>
+        <input type="text" id="p-name" placeholder="ชื่อสินค้า" required>
+        <input type="number" id="p-qty" placeholder="จำนวนเริ่มต้น" min="0" required>
+        <button type="submit" class="btn-green">+ เพิ่มสินค้าใหม่</button>
+      </form>
+
+      <!-- ช่องค้นหา / กรองสินค้า -->
+      <div class="inline-form" style="margin-top: 15px; margin-bottom: 15px;">
+        <input type="text" id="search-input" placeholder="🔍 ค้นหาตามรหัส หรือ ชื่อสินค้า..." oninput="filterProducts()">
+        <select id="filter-stock" onchange="filterProducts()" style="padding: 9px; border-radius: 4px; border: 1px solid #ccc;">
+          <option value="all">สินค้าทั้งหมด</option>
+          <option value="low">เฉพาะสต็อกต่ำ (< 5 ชิ้น)</option>
+          <option value="normal">สต็อกปกติ (>= 5 ชิ้น)</option>
+        </select>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>รหัสสินค้า</th>
+            <th>ชื่อสินค้า</th>
+            <th>คงเหลือ</th>
+            <th>การจัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="product-table-body"></tbody>
+      </table>
+    </section>
+
+    <!-- เพิ่มพนักงานใหม่โดยแอดมิน -->
+    <section id="admin-user-mgmt-section" class="card" style="display: none;">
+      <h2>👤 จัดการผู้ใช้งาน / เพิ่มพนักงานใหม่ (Admin Only)</h2>
+      <form id="create-user-form" class="inline-form">
+        <input type="text" id="new-username" placeholder="Username (เช่น somchai_staff)" required>
+        <input type="text" id="new-name" placeholder="ชื่อ-นามสกุล" required>
+        <input type="email" id="new-email" placeholder="อีเมล" required>
+        <input type="password" id="new-password" placeholder="รหัสผ่าน (อย่างน้อย 8 ตัว)" minlength="8" required>
+        <select id="new-role" style="padding: 9px; border-radius: 4px; border: 1px solid #ccc;" required>
+          <option value="member">Staff (พนักงาน)</option>
+          <option value="admin">Admin (ผู้ดูแลระบบ)</option>
+        </select>
+        <button type="submit" class="btn-green">+ สร้างบัญชี</button>
+      </form>
+    </section>
+
+    <!-- หน้าจอฝั่ง Admin Audit Portal -->
+    <section id="admin-audit-section" class="card admin-portal" style="display: none;">
+      <h2>🛡️ Admin Security & Audit Trail Portal (Read-Only)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="log-table-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

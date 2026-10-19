@@ -1,0 +1,72 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f4f6f9; color: #333; }
+header { background-color: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+.container { max-width: 1050px; margin: 20px auto; padding: 0 15px; }
+.card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 25px; }
+.card h2 { margin-bottom: 15px; color: #34495e; font-size: 1.25rem; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; }
+.inline-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+input { padding: 9px 12px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 150px; }
+button { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; background-color: #3498db; color: white; }
+button:hover { opacity: 0.9; }
+button.btn-green { background-color: #27ae60; }
+button.btn-red { background-color: #e74c3c; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 12px; border-bottom: 1px solid #eef2f5; text-align: left; }
+th { background-color: #f8f9fa; color: #555; }
+.warning-row { background-color: #fff3cd; color: #856404; }
+.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.85rem; background-color: #e2e8f0; }
+
+/* Dashboard UI Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+.dash-card {
+  background: #f0f4f9;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.dash-card.dash-danger {
+  background: #ffdede;
+  border-color: #fca5a5;
+}
+.dash-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+.dash-value {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 10px 0 2px 0;
+}
+.dash-sub {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Dashboard Color Palette */
+.text-blue { color: #3b82f6; }
+.text-green { color: #10b981; }
+.text-orange { color: #f97316; }
+.text-danger { color: #ef4444; }
+.text-danger-title { color: #b91c1c; }
+.text-purple { color: #8b5cf6; }
+
+/* Low stock alert */
+.low-stock-row { background-color: #ffe6e6 !important; }
+.badge-danger {
+  background-color: #e74c3c;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+  display: inline-block;
+}
